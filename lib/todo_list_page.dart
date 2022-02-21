@@ -20,28 +20,54 @@ class _TodoListPageState extends State<TodoListPage> {
       body: ListView.builder(
         itemCount: todoList.length,
         itemBuilder: (context, index) {
-          return Card(
-            child: Column(
-              children: [
-                ListTile(
-                  title: Text(todoList[index]),
+          return Dismissible(
+            key: UniqueKey(),
+            direction: DismissDirection.endToStart,
+            onDismissed: (direction) {
+              // Remove the item from the data source.
+              setState(() {
+                todoList.removeAt(index);
+              });
+
+              // Then show a snackbar.
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(' 削除しました！')));
+            },
+            background: Container(
+              alignment: AlignmentDirectional.centerEnd,
+              color: Colors.red,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
+                child: Icon(
+                  Icons.delete,
+                  color: Colors.white,
                 ),
-                ElevatedButton(
-                  onPressed: () async {
-                    final updateText = await Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) {
-                        return TodoUpdatePage(todoList[index], index);
-                      }),
-                    );
-                    if (updateText != null) {
-                      setState(() {
-                        todoList[index] = updateText;
-                      });
-                    }
-                  },
-                  child: Text('更新', style: TextStyle(color: Colors.white)),
-                ),
-              ],
+              ),
+
+            ),
+            child: Card(
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text(todoList[index]),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final updateText = await Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) {
+                          return TodoUpdatePage(todoList[index], index);
+                        }),
+                      );
+                      if (updateText != null) {
+                        setState(() {
+                          todoList[index] = updateText;
+                        });
+                      }
+                    },
+                    child: Text('更新', style: TextStyle(color: Colors.white)),
+                  ),
+                ],
+              ),
             ),
           );
         },
