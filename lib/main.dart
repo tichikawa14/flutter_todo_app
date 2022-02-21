@@ -39,8 +39,27 @@ class _TodoListPageState extends State<TodoListPage> {
         itemCount: todoList.length,
         itemBuilder: (context, index) {
           return Card(
-            child: ListTile(
-              title: Text(todoList[index]),
+            child: Column(
+              children: [
+                ListTile(
+                  title: Text(todoList[index]),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final updateText = await Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) {
+                        return TodoUpdatePage(todoList[index], index);
+                      }),
+                    );
+                    if (updateText != null) {
+                      setState(() {
+                        todoList[index] = updateText;
+                      });
+                    }
+                  },
+                  child: Text('更新', style: TextStyle(color: Colors.white)),
+                ),
+              ],
             ),
           );
         },
@@ -101,6 +120,65 @@ class _TodoAddPageState extends State<TodoAddPage> {
                     Navigator.of(context).pop(_text);
                   },
                   child: Text('リスト追加', style: TextStyle(color: Colors.white)),
+                ),
+              ),
+              const SizedBox(height: 8,),
+              Container(
+                  width: double.infinity,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('キャンセル'),
+                  )
+              )
+            ]
+        ),
+      ),
+    );
+  }
+}
+
+// リスト更新画面用Widget
+class TodoUpdatePage extends StatefulWidget {
+  TodoUpdatePage(this.text, this.index);
+  String text;
+  int index;
+
+  @override
+  _TodoUpdatePageState createState() => _TodoUpdatePageState();
+}
+
+class _TodoUpdatePageState extends State<TodoUpdatePage> {
+  String _text = '';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+          title: Text('リスト更新')
+      ),
+      body: Container(
+        padding: EdgeInsets.all(64),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              TextFormField(
+                initialValue: widget.text,
+                onChanged: (String value) {
+                  setState(() {
+                    _text = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(_text);
+                  },
+                  child: Text('リスト更新', style: TextStyle(color: Colors.white)),
                 ),
               ),
               const SizedBox(height: 8,),
